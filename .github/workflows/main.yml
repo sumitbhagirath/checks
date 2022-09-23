@@ -1,33 +1,18 @@
-name: Lint
+name: PR Checks
 
-on: [pull_request]
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
 
 jobs:
-  lint:
+  checks:
     runs-on: ubuntu-latest
-    name: ESLint checker
-
-    strategy:
-      matrix:
-        node-version: ['12.*']
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-        with:
-          fetch-depth: 1
+      - name: Checkout 
+        uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
+      - name: yarn install
+        run: npm install -g yarn
 
-      - name: npm install
-        run: npm ci --ignore-scripts
-
-      - name: Run ESLint
-        uses: ./
-        with:
-          eslint-config-path: ".eslintrc.json"
-          custom-directory: "./"
-          repo-token: ${{secrets.GITHUB_TOKEN}}
+      - name: install dependencies
+        run: yarn install
